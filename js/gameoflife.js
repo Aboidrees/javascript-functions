@@ -16,32 +16,51 @@ const printCell = (cell, state) => {
 };
 
 const corners = (state = []) => {
+  if (state.length === 0) {
+    return {
+      topRight: [0, 0],
+      bottomLeft: [0, 0]
+    };
+  }
 
-  //WITH FIRST COLUMN
-  let first = state.map(c => c[0]);
+  let xs = state.map(([x, _]) => x);
+  let ys = state.map(([_, y]) => y);
 
-  //WITH SECOND COLUMN
-  let second = state.map(c => c[1]);
-
-  first.length === 0 && first.push(0);
-  second.length === 0 && second.push(0);
-
-  return  { topRight: [Math.max(...first), Math.max(...second)], bottomLeft: [Math.min(...first), Math.min(...first)] };
+  return {
+    topRight: [Math.max(...xs), Math.max(...ys)],
+    bottomLeft: [Math.min(...xs), Math.min(...ys)]
+  };
 };
 
-const printCells = (state) => { };
+const printCells = (state) => {
+  const {
+    bottomLeft,
+    topRight
+  } = corners(state);
+  let output = "";
+  for (let y = topRight[1]; y >= bottomLeft[1]; y--) {
+    let row = [];
+    for (let x = bottomLeft[0]; x <= topRight[0]; x++) {
+      row.push(printCell([x, y], state));
+    }
+    output += row.join(" ") + "\n";
+  }
 
-const getNeighborsOf = ([x, y]) => { };
+  return output;
+};
 
-const getLivingNeighbors = (cell, state) => { };
 
-const willBeAlive = (cell, state) => { };
+const getNeighborsOf = ([x, y]) => {};
 
-const calculateNext = (state) => { };
+const getLivingNeighbors = (cell, state) => {};
 
-const iterate = (state, iterations) => { };
+const willBeAlive = (cell, state) => {};
 
-const main = (pattern, iterations) => { };
+const calculateNext = (state) => {};
+
+const iterate = (state, iterations) => {};
+
+const main = (pattern, iterations) => {};
 
 const startPatterns = {
   rpentomino: [
