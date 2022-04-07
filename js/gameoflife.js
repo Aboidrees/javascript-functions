@@ -1,3 +1,7 @@
+const {
+  Parser
+} = require("esprima");
+
 function seed() {
   return [...arguments];
 }
@@ -49,8 +53,16 @@ const printCells = (state) => {
   return output;
 };
 
-
-const getNeighborsOf = ([x, y]) => {};
+const getNeighborsOf = ([x, y]) => {
+  let offset = [-1, 0, 1];
+  let neighbors = [];
+  for (const j in offset) {
+    for (const i in offset) {
+      !same([x, y], [x + offset[j], y + offset[i]]) && neighbors.push([x + offset[j], y + offset[i]])
+    }
+  }
+  return neighbors;
+};
 
 const getLivingNeighbors = (cell, state) => {};
 
