@@ -1,13 +1,11 @@
-const {
-  Parser
-} = require("esprima");
+const { Parser } = require("esprima");
 
 function seed() {
   return [...arguments];
 }
 
 function same([x, y], [j, k]) {
-  return (x === j && y === k);
+  return x === j && y === k;
 }
 
 // The game state to search for `cell` is passed as the `this` value of the function.
@@ -16,14 +14,14 @@ function contains(cell) {
 }
 
 const printCell = (cell, state) => {
-  return contains.call(state, cell) ? '\u25A3' : '\u25A2';
+  return contains.call(state, cell) ? "\u25A3" : "\u25A2";
 };
 
 const corners = (state = []) => {
   if (state.length === 0) {
     return {
       topRight: [0, 0],
-      bottomLeft: [0, 0]
+      bottomLeft: [0, 0],
     };
   }
 
@@ -32,15 +30,12 @@ const corners = (state = []) => {
 
   return {
     topRight: [Math.max(...xs), Math.max(...ys)],
-    bottomLeft: [Math.min(...xs), Math.min(...ys)]
+    bottomLeft: [Math.min(...xs), Math.min(...ys)],
   };
 };
 
 const printCells = (state) => {
-  const {
-    bottomLeft,
-    topRight
-  } = corners(state);
+  const { bottomLeft, topRight } = corners(state);
   let output = "";
   for (let y = topRight[1]; y >= bottomLeft[1]; y--) {
     let row = [];
@@ -58,14 +53,17 @@ const getNeighborsOf = ([x, y]) => {
   let neighbors = [];
   for (const j in offset) {
     for (const i in offset) {
-      !same([x, y], [x + offset[j], y + offset[i]]) && neighbors.push([x + offset[j], y + offset[i]])
+      !same([x, y], [x + offset[j], y + offset[i]]) &&
+        neighbors.push([x + offset[j], y + offset[i]]);
     }
   }
   return neighbors;
 };
 
 const getLivingNeighbors = (cell, state) => {
-  return getNeighborsOf(cell).filter((neighbor) => contains.call(state, neighbor));
+  return getNeighborsOf(cell).filter((neighbor) =>
+    contains.call(state, neighbor)
+  );
 };
 
 const willBeAlive = (cell, state) => {
@@ -74,14 +72,33 @@ const willBeAlive = (cell, state) => {
   return (
     livingNeighbors.length === 3 ||
     (contains.call(state, cell) && livingNeighbors.length === 2)
-  )
+  );
 };
 
-const calculateNext = (state) => {};
+const calculateNext = (state) => {
+  const { bottomLeft, topRight } = corners(state);
+  let result = [];
+  for (let y = topRight[1] + 1; y >= bottomLeft[0] - 1; y--) {
+    for (let x = bottomLeft[0] - 1; x <= topRight[0] + 1; x++) {
+      result = result.concat(willBeAlive([x, y], state) ? [[x, y]] : []);
+    }
+  }
+  return result;
+};
 
-const iterate = (state, iterations) => {};
+const iterate = (state, iterations) => {
+  const states = [state];
+  for (let i = 0; i < iterations; i++) {
+    states.push(calculateNext(states[states.length - 1]))
+  }
+  return states;
+};
 
-const main = (pattern, iterations) => {};
+const main = (pattern, iterations) => {
+  const results = iterate(startPatterns[pattern], iterations);
+  results.forEach(r => console.log(printCells(r)));
+  return results;
+};
 
 const startPatterns = {
   rpentomino: [
@@ -89,7 +106,7 @@ const startPatterns = {
     [2, 3],
     [3, 3],
     [3, 4],
-    [4, 4]
+    [4, 4],
   ],
   glider: [
     [-2, -2],
@@ -100,14 +117,14 @@ const startPatterns = {
     [2, 1],
     [3, 1],
     [3, 2],
-    [2, 3]
+    [2, 3],
   ],
   square: [
     [1, 1],
     [2, 1],
     [1, 2],
-    [2, 2]
-  ]
+    [2, 2],
+  ],
 };
 
 const [pattern, iterations] = process.argv.slice(2);
